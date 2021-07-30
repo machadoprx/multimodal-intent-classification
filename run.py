@@ -52,8 +52,12 @@ for split in range(0, splits):
 
         incomplete_indices = np.random.randint(0, len(y_test), int(len(y_test) * (1.0-completion)))
         incomplete_indices += len(y_train)
-
+        
         X_txt = np.concatenate([X_train_txt, X_test_txt], axis=0)
+
+        for inc in incomplete_indices:
+            X_txt[inc] *= 0.0
+
         X_img = np.concatenate([X_train_im, X_test_im], axis=0)
         S = graph_construction(X_txt, X_img, incomplete_indices, k=nb_neighbors)
         X_prop = regularization(S, nb_neighbors, X_txt, incomplete_indices, iterations=it, mi=mi)
