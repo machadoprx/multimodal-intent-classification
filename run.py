@@ -21,6 +21,10 @@ np.random.seed(seed)
 intent:
 !git clone https://github.com/karansikka1/documentIntent_emnlp19/ ./dataset/
 '''
+labels = {"provoke":0, "inform":1, 
+        "advocate":2, "entertain":3, 
+        "expose":4, "express":5, 
+        "promote":6}
 
 results = []
 for split in range(0, splits):
@@ -40,8 +44,8 @@ for split in range(0, splits):
             X_test_im.append(features)
         X_test_im = np.array(X_test_im)
 
-        y_train = np.array(df_train['intent'])
-        y_test = np.array(df_test['intent'])
+        y_train = np.array(df_train['intent'].apply(lambda a: labels[a]))
+        y_test = np.array(df_test['intent'].apply(lambda a: labels[a]))
 
         X_train_txt = model.encode(df_train['caption'])
         X_test_txt = model.encode(df_test['caption'])
@@ -60,5 +64,5 @@ for split in range(0, splits):
         clf = SVC(gamma='auto', probability=True)
         clf.fit(X_train, y_train)
         y_pred = clf.predict_proba(X_test)
-
+        y_pred = np.argmax(y_pred, axis=1)
         print(classification_report(y_test, y_pred))

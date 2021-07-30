@@ -14,16 +14,16 @@ from sklearn.neighbors import NearestNeighbors
 import numpy as np
 
 def gauss_kernel(x, sigma):
-    return np.exp(-(x**2)/(2*sigma))
+    return np.exp(-(x**2)/(2*sigma + 1e-5))
 
 def graph_construction(X_txt, X_img, incomplete_indices, k=30):
     n = X_txt.shape[0]
     A = np.zeros((n, n))
 
-    neigh_im = NearestNeighbors(n_neighbors=k)
-    neigh_txt = NearestNeighbors(n_neighbors=k)
+    neigh_im = NearestNeighbors(n_neighbors=k).fit(X_img)
+    neigh_txt = NearestNeighbors(n_neighbors=k).fit(X_txt)
 
-    dists_im, neighbors_im = neigh_im.kneighbors(X_im, return_distance=True)
+    dists_im, neighbors_im = neigh_im.kneighbors(X_img, return_distance=True)
     dists_txt, neighbors_txt = neigh_txt.kneighbors(X_txt, return_distance=True)
 
     sigma_im = dists_im[:, :7]
@@ -34,16 +34,16 @@ def graph_construction(X_txt, X_img, incomplete_indices, k=30):
 
     for node in range(n):
         if node not in incomplete_indices: 
-            for neigh_i, dist_i in zip(neighbors_txt, dists_txt):
-                A[node, neigh_i] = gauss_kernel(dist_i, sigma_im)
+            for neigh_i, dist_i in zip(neighbors_txt[node], dists_txt[node]):
+                A[node, neigh_i] = gauss_kernel(dist_i, sigma_im[node])
         else:
-            for neigh_i, dist_i in zip(neighbors_im, dists_im):
-                A[node, neigh_i] = gauss_kernel(dist_i, sigma_txt)
+            for neigh_i, dist_i in zip(neighbors_im[node], dists_im[node]):
+                A[node, neigh_i] = gauss_kernel(dist_i, sigma_txt[node])
 
-    D = np.mean(A, axis=0)
-    D = 1/np.sqrt(D)
+    D = np.sum(A, axis=0)
+    D = 1/np.sqrt(D + 1e-5)
+
     D = np.diag(D)
 
     S = D @ A @ D
-
     return S
