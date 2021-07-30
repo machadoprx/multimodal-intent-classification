@@ -47,11 +47,11 @@ for split in range(0, splits):
         y_train = np.array(df_train['intent'].apply(lambda a: labels[a]))
         y_test = np.array(df_test['intent'].apply(lambda a: labels[a]))
 
-        X_train_txt = model.encode(df_train['caption'])
-        X_test_txt = model.encode(df_test['caption'])
-
         incomplete_indices = np.random.randint(0, len(y_test), int(len(y_test) * (1.0-completion)))
         incomplete_indices += len(y_train)
+
+        X_train_txt = model.encode(df_train['caption'])
+        X_test_txt = model.encode(df_test['caption'])
         
         X_txt = np.concatenate([X_train_txt, X_test_txt], axis=0)
 

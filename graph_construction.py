@@ -36,13 +36,14 @@ def graph_construction(X_txt, X_img, incomplete_indices, k=30):
         if node not in incomplete_indices: 
             for neigh_i, dist_i in zip(neighbors_txt[node], dists_txt[node]):
                 A[node, neigh_i] = gauss_kernel(dist_i, sigma_txt[node])
+                A[neigh_i, node] = gauss_kernel(dist_i, sigma_txt[node])
         else:
             for neigh_i, dist_i in zip(neighbors_im[node], dists_im[node]):
                 A[node, neigh_i] = gauss_kernel(dist_i, sigma_im[node])
+                A[neigh_i, node] = gauss_kernel(dist_i, sigma_im[node])
 
     D = np.sum(A, axis=0)
     D = 1/np.sqrt(D + 1e-5)
-
     D = np.diag(D)
 
     S = D @ A @ D
