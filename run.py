@@ -15,14 +15,6 @@ seed = 0
 
 np.random.seed(seed)
 
-'''
-intent:
-!git clone https://github.com/karansikka1/documentIntent_emnlp19/ ./dataset/
-!wget https://www.dropbox.com/s/pp1nkipzklrgqwl/paper-intent.zip
-!tar -xvf ./dataset/resnet18_feat.tar
-!unzip paper-intent.zip -d ./features
-'''
-
 labels = {"provoke":0, "inform":1, 
         "advocate":2, "entertain":3, 
         "expose":4, "express":5, 
